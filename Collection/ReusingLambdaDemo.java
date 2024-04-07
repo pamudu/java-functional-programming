@@ -54,5 +54,51 @@ public class ReusingLambdaDemo {
 
         //Rather than duplicate the lambda expression several times, we created it once
         //and stored it in a reference named startsWithN of type Predicate.
+
+
+        //however, duplication will sneak in quickly when we bring in another letter to match.
+        final Predicate<String> startsWithN = name -> name.startsWith("N");
+        final Predicate<String> startsWithB = name -> name.startsWith("B");
+
+        final long countFriendsStartWithN =
+                friends.stream()
+                        .filter(startsWithN).count();
+        final long countFriendsStartWithB =
+                friends.stream()
+                        .filter(startsWithB).count();
+
+        // but the two predicates are mere duplicates,
+        //with only the letter they use being different. Let’s figure out a way to eliminate
+        //this duplication. --> check the checkIfStartsWith() method
+
+        final long countFriendNamesStartN =
+                friends.stream()
+                        .filter(checkIfStartsWith("N")).count();
+        final long countFriendNamesStartB =
+                friends.stream()
+                        .filter(checkIfStartsWith("B")).count();
     }
+
+    public static Predicate<String> checkIfStartsWith(final String letter){
+        // the checkIfStartsWith() returns a
+        //function as a result. This is a higher-order function
+        return name -> name.startsWith(letter);
+    }
+
+    /*
+    * From within a lambda expression we can only access local variables that are final or
+    effectively final in the enclosing scope.
+    A lambda expression may be invoked right away, or it may be invoked lazily or from
+    multiple threads. To avoid race conditions, the local variables we access in the
+    enclosing scope are not allowed to change once initialized. Any attempt to change
+    them will result in a compilation error.
+    Variables marked final directly fit this bill, but Java does not insist that we mark them
+    as such. Instead, Java looks for two things. First, the accessed variables have to be
+    initialized within the enclosing methods before the lambda expression is defined.
+    Second, the values of these variables don’t change anywhere else—that is, they’re
+    effectively final although they are not marked as such.
+    When using lambda expressions that capture local state, we should be aware that
+    stateless lambda expressions are runtime constants, but those that capture local
+    state have an additional evaluation cost.
+    * */
 }
