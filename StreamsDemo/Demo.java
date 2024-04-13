@@ -3,6 +3,7 @@ package StreamsDemo;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -89,5 +90,13 @@ public class Demo {
     public static void isTransactionsExpensive(List<Transaction> transactions){
         boolean expensive = transactions.stream().allMatch(t -> t.getValue() > 500);
         System.out.println("expensive:" + expensive);
+    }
+
+    public static void findAnyGroceryTransaction(List<Transaction> transactions){
+        Optional<Transaction> any =
+                transactions
+                        .stream()
+                        .filter(t -> t.getType() == Transaction.Type.GROCERY)
+                        .findAny();
     }
 }
